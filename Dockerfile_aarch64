@@ -25,5 +25,9 @@ COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/ /opt/
 # Make the environment sourced for interactive Bash users
 RUN printf "\n# Source SDK for all users\n. /opt/axis/acapsdk/environment-*\n" >> /etc/bash.bashrc
 
+# Install packages needed for interactive users
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl
+
 # Set workdir
 WORKDIR /opt/app
