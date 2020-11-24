@@ -7,20 +7,23 @@ ARG REPO=axisecp
 FROM ${REPO}/acap-api:${VERSION}-${ARCH}-ubuntu${UBUNTU_VERSION} as api
 FROM ${REPO}/acap-toolchain:${VERSION}-${ARCH}-ubuntu${UBUNTU_VERSION} as toolchain
 
-# Copy the tools and scripts from the toolchain container
-RUN cp -r /opt/axis/sdk/temp/* /opt/axis/sdk/
+# Copy the tools and scripts from the toolchain container and remove old folders
+RUN mv /opt/axis/sdk/temp/* /opt/axis/acapsdk/ && \
+    rm -rf /opt/axis/sdk /opt/axis/tools
+
+# Update paths in environment-setup script
+RUN sed -i 's:/opt/axis/sdk:/opt/axis/acapsdk:g' /opt/axis/acapsdk/environment-setup*
 
 # Hardcoded string for SDK architecture
 ARG PKG_ARCH=aarch64-poky-linux
 
 # Copy the lib, include and .pc files from the API container
-COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/ /opt/axis/sdk/sysroots/${PKG_ARCH}/usr/lib/
-COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/include/ /opt/axis/sdk/sysroots/${PKG_ARCH}/usr/include/
-COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/ /opt/axis/sdk/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/
+COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/lib/
+COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/include/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/include/
+COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/
 
 # Make the environment sourced for interactive Bash users
-RUN printf "\n# Source SDK for all users\n. /opt/axis/sdk/environment-*\n" >> /etc/bash.bashrc
+RUN printf "\n# Source SDK for all users\n. /opt/axis/acapsdk/environment-*\n" >> /etc/bash.bashrc
 
 # Set workdir
 WORKDIR /opt/app
-
