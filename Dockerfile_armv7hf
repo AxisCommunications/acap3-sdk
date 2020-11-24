@@ -26,8 +26,11 @@ COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/ /opt/
 RUN printf "\n# Source SDK for all users\n. /opt/axis/acapsdk/environment-*\n" >> /etc/bash.bashrc
 
 # Install packages needed for interactive users
+# - curl: required by eap-install.sh
+# - iputils-ping: required by eap-install.sh, but is rather a bug
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl
+   curl \
+   iputils-ping
 
 # Set workdir
 WORKDIR /opt/app
