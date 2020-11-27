@@ -12,6 +12,9 @@ This approach is pretty good since it gives possibillity to
 * Set up tests for pull requests, i.e. non-master branches
 * Merge to master
 * Set a tag and build a release per tag
+* Both 3.2-armv7hf and 3.2-armv7hf-ubuntu19.10 works fine with correct regex
+* Setting one and then the other triggers a new job and the result is two tags
+  for the same digest, as desired.
 
 
 + +Pros
@@ -24,10 +27,8 @@ This approach is pretty good since it gives possibillity to
   - Might be easy to misspell or miss something in a tag.
   - Hard/not possible to delete tags in GUI, see [Deleting tags](#deleting-tags)
   - Hard to retrigger, manual handling at error or deleting tag and re-tag.
-  - Seems like pushing a second tag 3.2-armv7hf after 3.2-armv7hf-ubuntu19.20 does
-    not trigger a new autobuild and no new tag is pushed. If it would work, each
-    new tag will run a new autobuild which gives overhead. Keeping build cache
-    would save time and should give a second tag of the same artifact
+  - Each new tag will run a new autobuild which gives overhead. Keeping build cache
+    saves time and resources though and gives a second tag of the same artifact
 
 ### 3. Using hooks and master branch
 The most flexible way it seems.
