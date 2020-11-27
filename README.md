@@ -17,13 +17,22 @@ This approach is pretty good since it gives possibillity to
   for the same digest, as desired.
 
 
-+ +Pros
++ (+++) Pros
   + Gives good control on when a release should be built
   + Quite easy to filter on release tags, e.g. "3.([])+-armv7hf([])\*"
   + Works without any additional logic
   + Old releases may be recreated manually by checking out the tag.
-- -Cons
-  - Not as automatic as perhaps wanted
+  + Should be pretty easy to automate a step of version in Jenkins with
+    service user
+    + Sed the Dockerfiles for version and ubuntu version
+    + Commit the Dockerfiles locally
+    + Tag the commits approperly, by parsing Dockerfiles preferably
+    + Push the commit and tags to Github Master branch
+    + Docker autobuild is triggered to build and tag a acap-sdk release
+  + Always possible to update the release without tagging and a stricter regexp
+    for Docker autobuild may be used to only build for master, i.e. for 3.2* but
+    not 3.2-rc2*
+- (---) Cons
   - Might be easy to misspell or miss something in a tag.
   - Hard/not possible to delete tags in GUI, see [Deleting tags](#deleting-tags)
   - Hard to retrigger, manual handling at error or deleting tag and re-tag.
@@ -33,7 +42,7 @@ This approach is pretty good since it gives possibillity to
 ### 3. Using hooks and master branch
 The most flexible way it seems.
 
-+ +Pros
++ (+++) Pros
   + Gives good control on when a release should be built
   + May choose to keep a folder per release if desired to easily build.
   + Old releases may be recreated manually by using master and just build the
@@ -43,7 +52,7 @@ The most flexible way it seems.
   + Could more easily be automized to suit specific needs, e.g. to use multiple
     tags on one build and parse the Docker image tag from a Dockerfile.
   + Could add tests that check extract Docker image tag from Dockerfile.
-- -Cons
+- (---) Cons
   - Requires more work to be done.
 
 ### Questions:
@@ -63,6 +72,22 @@ in https://docs.docker.com/docker-hub/builds/automated-testing.
 #### Crux
 * Not specyfing any version gives Docker compose format version 1, not tested if
   possible to specify other formats
+
+### Creating tags
+To create and list two tags for a release
+
+``` bash
+git tag 3.0-aarch64-ubuntu19.10 -a -m "Release tag 3.0-aarch64-ubuntu19.10"
+git tag 3.0-aarch64 -a -m "Release tag 3.0-aarch64"
+git tag
+```
+Push all tags at once or one at the time
+``` bash
+git push origin --tags
+or
+git push origin refs/tags/3.0-aarch64:refs/tags/3.0-aarch64
+git push origin refs/tags/3.0-aarch64-ubuntu19.10:refs/tags/3.0-aarch64-ubuntu-19.10
+```
 
 ### Deleting tags
 It seems to not be possible in Github GUI, but pushing a deleted tag is
