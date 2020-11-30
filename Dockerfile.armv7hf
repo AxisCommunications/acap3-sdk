@@ -17,20 +17,24 @@ RUN sed -i 's:/opt/axis/sdk:/opt/axis/acapsdk:g' /opt/axis/acapsdk/environment-s
 # Hardcoded string for SDK architecture
 ARG PKG_ARCH=cortexa9hf-neon-poky-linux-gnueabi
 
-# Copy the lib, include and .pc files from the API container
+# Copy the lib, include, .pc and Axis protobuf files from the API container
 COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/lib/
 COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/include/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/include/
 COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/
+COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/share/protobuf/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/share/protobuf/
 
 # Make the environment sourced for interactive Bash users
 RUN printf "\n# Source SDK for all users\n. /opt/axis/acapsdk/environment-*\n" >> /etc/bash.bashrc
 
 # Install packages needed for interactive users
-# - curl: required by eap-install.sh
-# - iputils-ping: required by eap-install.sh, but is rather a bug
+# - curl, iputils-ping: required by eap-install.sh
 RUN apt-get update && apt-get install -y --no-install-recommends \
    curl \
-   iputils-ping
+   iputils-ping \
+   xz-utils \
+   git \
+   less \
+   vim
 
 # Set workdir
 WORKDIR /opt/app
