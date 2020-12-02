@@ -1,100 +1,157 @@
-# ACAP SDK release image Dockerfiles
+# Quick reference
+[ACAP3 Manual](https://www.axis.com/products/online-manual/s00004)
 
-## Pushing new versions
-
-### 1. Using special branches
-Keeping releases on branches does not seem like a good implementation due to the
-easiness of deleting these.
-
-### 2. Using tags and master branch
-This approach is pretty good since it gives possibillity to
-
-* Set up tests for pull requests, i.e. non-master branches
-* Merge to master
-* Set a tag and build a release per tag
-* Both 3.2-armv7hf and 3.2-armv7hf-ubuntu19.10 works fine with correct regex
-* Setting one and then the other triggers a new job and the result is two tags
-  for the same digest, as desired.
+- Supported architectures: amd64
 
 
-+ (+++) Pros
-  + Gives good control on when a release should be built
-  + Quite easy to filter on release tags, e.g. "3.([])+-armv7hf([])\*"
-  + Works without any additional logic
-  + Old releases may be recreated manually by checking out the tag.
-  + Should be pretty easy to automate a step of version in Jenkins with
-    service user
-    + Sed the Dockerfiles for version and ubuntu version
-    + Commit the Dockerfiles locally
-    + Tag the commits approperly, by parsing Dockerfiles preferably
-    + Push the commit and tags to Github Master branch
-    + Docker autobuild is triggered to build and tag a acap-sdk release
-  + Always possible to update the release without tagging and a stricter regexp
-    for Docker autobuild may be used to only build for master, i.e. for 3.2* but
-    not 3.2-rc2*
-- (---) Cons
-  - Might be easy to misspell or miss something in a tag.
-  - Hard/not possible to delete tags in GUI, see [Deleting tags](#deleting-tags)
-  - Hard to retrigger, manual handling at error or deleting tag and re-tag.
-  - Each new tag will run a new autobuild which gives overhead. Keeping build cache
-    saves time and resources though and gives a second tag of the same artifact
+## Overview
+This image is based on Ubuntu and contains the environment needed for building an AXIS Camera Application Platform (ACAP) application.
+It includes all tools for building and packaging an ACAP 3 application as well as API components (header and library files) needed for accessing different parts of the camera firmware. The image can be used as a basis for custom built images to run your application or as developer environment working inside the container.
 
-### 3. Using hooks and master branch
-The most flexible way it seems.
+For more information on the latest version and what's new, see [What's new in ACAP SDK](https://www.axis.com/products/online-manual/s00004#t10160830). For more information about Axis ́APIs, SDKs, technical tools and extensive technical documentation, see [Developer Community ](https://www.axis.com/developer-community/acap).
 
-+ (+++) Pros
-  + Gives good control on when a release should be built
-  + May choose to keep a folder per release if desired to easily build.
-  + Old releases may be recreated manually by using master and just build the
-    desired version.
-  + Use master branch, no need to filter. Test may run on pull request, i.e.
-    non-master branches.
-  + Could more easily be automized to suit specific needs, e.g. to use multiple
-    tags on one build and parse the Docker image tag from a Dockerfile.
-  + Could add tests that check extract Docker image tag from Dockerfile.
-- (---) Cons
-  - Requires more work to be done.
-
-### Questions:
-* Will we release 3.2-aarch64-ubuntu19.10 and 3.2-aarch64?
-* Add sanity checks? Build a helloworld example from standard way and through
-  logging in to the container, possible?
-* Are we aiming at releasing for more distros and possibly different ubuntu
-  distros, i.e. 19.10 and 20.10?
+See the license section at the bottom of this page for restrictions that relate to the use of this image.
 
 
-## Other notes
+## ACAP
+[AXIS Camera Application Platform (ACAP)](https://www.axis.com/sv-se/products/analytics/acap), is an open platform supported by most Axis cameras. The platform enables developers to develop applications that can be downloaded and installed on Axis network cameras and video encoders.
 
-### Docker autotest
-To run autotest a file ".test.yml" needs to exist in the same folder, see more
-in https://docs.docker.com/docker-hub/builds/automated-testing.
 
-#### Crux
-* Not specyfing any version gives Docker compose format version 1, not tested if
-  possible to specify other formats
+# How to use the Toolchain Image
+An example of how to use the toolchain image to build a hello-world application
 
-### Creating tags
-To create and list two tags for a release
 
-``` bash
-git tag 3.0-aarch64-ubuntu19.10 -a -m "Release tag 3.0-aarch64-ubuntu19.10"
-git tag 3.0-aarch64 -a -m "Release tag 3.0-aarch64"
-git tag
-```
-Push all tags at once or one at the time
-``` bash
-git push origin --tags
-or
-git push origin refs/tags/3.0-aarch64:refs/tags/3.0-aarch64
-git push origin refs/tags/3.0-aarch64-ubuntu19.10:refs/tags/3.0-aarch64-ubuntu-19.10
-```
+## Create a Hello World application
+Create the following folder and file structure in a working directory:
 
-### Deleting tags
-It seems to not be possible in Github GUI, but pushing a deleted tag is
+    ├── Dockerfile
+    └── app
+        ├── LICENSE
+        ├── Makefile
+        └── hello_world.c
 
-``` bash
-git tag -d 3.0-aarch64-ubuntu19.10
-git push origin :refs/tags/3.0-aarch64-ubuntu19.10
-```
 
+The files comprising the following:
+
+__Dockerfile__
+
+    FROM axisecp/acap-sdk:3.2-armv7hf-ubuntu19.10
+
+    # Building the ACAP application
+    COPY ./app /opt/app/
+    WORKDIR /opt/app
+    RUN . /opt/axis/acapsdk/environment-setup* && create-package.sh
+
+__Makefile__ _(Note! make sure to preserve the tabs below, recipes in a makefile must be preceded by a single standard tab character)_
+
+    PROGS = hello_world
+    SRCS  = hello_world.c
+    OBJS  = $(SRCS:.c=.o)
+    all: $(PROGS)
+    $(PROGS): $(OBJS)
+      $(CC) $^ -o $@
+    clean:
+      rm -f $(PROGS) *.o
+
+__LICENCE__
+
+    Third Party Software Licenses
+
+
+__hello_world.c__
+
+    #include <syslog.h>
+
+    void main(int argc, char *argv[]) {
+        /* Open the syslog to report messages for "hello_world" */
+        openlog("hello_world", LOG_PID|LOG_CONS, LOG_USER);
+        /* Choose between { LOG_INFO, LOG_CRIT, LOG_WARN, LOG_ERR }*/
+        syslog(LOG_INFO, "Hello, World!");
+        /* Close application logging to syslog */
+        closelog();
+    }
+
+
+## Build and run the application
+
+Standing in your working directory run the following commands:
+
+     docker build --tag hello_world:1.0 .
+
+Copy the result from the build to a local directory `build`
+
+    docker cp $(docker create hello_world:1.0):/opt/app ./build
+
+The working directory now contains a build folder with the following files:
+
+    ├── Dockerfile
+    ├── app
+    │   ├── LICENSE
+    │   ├── Makefile
+    │   └── hello_world.c
+    └── build
+        ├── LICENSE
+        ├── Makefile
+        ├── hello_world
+        ├── hello_world.c
+        ├── hello_world.o
+        ├── hello_world_1_0_0_LICENSE.txt
+        ├── hello_world_1_0_0_armv7hf.eap
+        ├── package.conf
+        ├── package.conf.orig
+        └── param.conf
+
+
+## Install your application on an Axis video product
+
+Installing your application on an Axis video product is as simple as:
+
+- Browse to the following page (replace `<axis_device_ip>` with the IP number of your Axis video product)
+
+    `http://<axis_device_ip>/#settings/apps`
+
+- Click Add, the `+` sign and browse to the newly built `hello_world_1_0_0_armv7hf.eap`
+
+- Click `Install`
+
+- `hello_world` is now available as an application on the device.
+
+- Run the application by clicking on the application icon and enable the `Start` switch
+
+
+## Build application inside container
+
+Standing in your working directory run the following command to bind mount the application directory in to the acap-sdk container:
+
+     docker run --rm -v $PWD/app:/opt/app -it hello_world:1.0 axisecp/acap-sdk:3.2-armv7hf-ubuntu19.10
+
+Now inside the container to build the application run
+
+     create-package.sh
+
+The app directory now contains the following files:
+
+    ├── Dockerfile
+    └── app
+        ├── LICENSE
+        ├── Makefile
+        ├── hello_world
+        ├── hello_world.c
+        ├── hello_world.o
+        ├── hello_world_1_0_0_LICENSE.txt
+        ├── hello_world_1_0_0_armv7hf.eap
+        ├── package.conf
+        ├── package.conf.orig
+        └── param.conf
+
+To install the application to a camera use command
+
+      eap-install.sh --help
+
+For more information on building and installing an application, see [ACAP3 Manual](https://www.axis.com/products/online-manual/s00004#t10152940).
+
+
+# License
+
+By downloading AXIS Embedded Development SDK you automatically agree to the terms in the [license agreement](https://www.axis.com/techsup/developer_doc/EULA/LICENSE.pdf)
 
