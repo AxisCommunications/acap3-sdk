@@ -6,9 +6,9 @@
 
 ## Overview
 This image is based on Ubuntu and contains the environment needed for building an AXIS Camera Application Platform (ACAP) application.
-It includes all tools for building and packaging an ACAP 3 application as well as API components (header and library files) needed for accessing different parts of the camera firmware. The image can be used as a basis for custom built images to run your application or as developer environment working inside the container.
+It includes all tools for building and packaging an ACAP 3 application as well as API components (header and library files) needed for accessing different parts of the camera firmware. The image can be used as a basis for custom built images to run your application or as a developer environment inside the container.
 
-For more information on the latest version and what's new, see [What's new in ACAP SDK](https://www.axis.com/products/online-manual/s00004#t10160830). For more information about Axis ́APIs, SDKs, technical tools and extensive technical documentation, see [Developer Community ](https://www.axis.com/developer-community/acap).
+For more information on the latest version and what's new, see [What's new in ACAP SDK](https://www.axis.com/products/online-manual/s00004#t10160830). For more information about Axis ́APIs, SDKs, technical tools and extensive technical documentation, see [Developer Community](https://www.axis.com/developer-community/acap).
 
 See the license section at the bottom of this page for restrictions that relate to the use of this image.
 
@@ -17,8 +17,8 @@ See the license section at the bottom of this page for restrictions that relate 
 [AXIS Camera Application Platform (ACAP)](https://www.axis.com/sv-se/products/analytics/acap), is an open platform supported by most Axis cameras. The platform enables developers to develop applications that can be downloaded and installed on Axis network cameras and video encoders.
 
 
-# How to use the Toolchain Image
-An example of how to use the toolchain image to build a hello-world application
+# How to use the ACAP SDK Image
+An example of how to use the ACAP SDK image to build a hello-world application
 
 
 ## Create a Hello World application
