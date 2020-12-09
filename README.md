@@ -53,7 +53,7 @@ __Makefile__ _(Note! make sure to preserve the tabs below, recipes in a makefile
     clean:
       rm -f $(PROGS) *.o
 
-__LICENCE__
+__LICENSE__
 
     Third Party Software Licenses
 
