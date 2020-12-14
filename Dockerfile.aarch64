@@ -1,15 +1,34 @@
 # Repository and tag variables
 ARG ARCH=aarch64
 ARG VERSION=3.2
-ARG UBUNTU_VERSION=19.10
+ARG TOOLCHAINS_UBUNTU_VERSION=19.10
+ARG UBUNTU_VERSION=20.04
 ARG REPO=axisecp
 
-FROM ${REPO}/acap-api:${VERSION}-${ARCH}-ubuntu${UBUNTU_VERSION} as api
-FROM ${REPO}/acap-toolchain:${VERSION}-${ARCH}-ubuntu${UBUNTU_VERSION} as toolchain
+FROM ${REPO}/acap-api:${VERSION}-${ARCH}-ubuntu${TOOLCHAINS_UBUNTU_VERSION} as api
+FROM ${REPO}/acap-toolchain:${VERSION}-${ARCH}-ubuntu${TOOLCHAINS_UBUNTU_VERSION} as toolchain
+FROM ubuntu:${UBUNTU_VERSION}
 
-# Copy the tools and scripts from the toolchain container and remove old folders
-RUN mv /opt/axis/sdk/temp/* /opt/axis/acapsdk/ && \
-    rm -rf /opt/axis/sdk /opt/axis/tools
+# Install packages needed for interactive users and some additional libraries
+# - curl, iputils-ping: required by eap-install.sh
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  crossbuild-essential-arm64 \
+  make \
+  pkg-config \
+  python3-pip \
+  curl \
+  iputils-ping \
+  xz-utils \
+  git \
+  less \
+  vim
+
+# Copy and install the tools and scripts from toolchain container
+COPY --from=toolchain /opt/axis/sdk/temp /opt/axis/acapsdk
+COPY --from=toolchain /opt/axis/tools /opt/axis/tools
+RUN apt-get install -y /opt/axis/tools/axis-acap-manifest-tools*.deb && \
+  pip3 install /opt/axis/tools/Larodconverter*.whl && \
+  rm -rf /opt/axis/tools
 
 # Update paths in environment-setup script
 RUN sed -i 's:/opt/axis/sdk:/opt/axis/acapsdk:g' /opt/axis/acapsdk/environment-setup*
@@ -25,16 +44,6 @@ COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/share/protobuf/ /opt
 
 # Make the environment sourced for interactive Bash users
 RUN printf "\n# Source SDK for all users\n. /opt/axis/acapsdk/environment-*\n" >> /etc/bash.bashrc
-
-# Install packages needed for interactive users
-# - curl, iputils-ping: required by eap-install.sh
-RUN apt-get update && apt-get install -y --no-install-recommends \
-   curl \
-   iputils-ping \
-   xz-utils \
-   git \
-   less \
-   vim
 
 # Set workdir
 WORKDIR /opt/app
