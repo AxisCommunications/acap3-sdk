@@ -35,7 +35,7 @@ The files comprising the following:
 
 __Dockerfile__
 
-    FROM axisecp/acap-sdk:3.2-armv7hf-ubuntu19.10
+    FROM axisecp/acap-sdk:3.2-armv7hf-ubuntu20.04
 
     # Building the ACAP application
     COPY ./app /opt/app/
@@ -123,7 +123,7 @@ Installing your application on an Axis video product is as simple as:
 
 Standing in your working directory run the following command to bind mount the application directory in to the acap-sdk container:
 
-     docker run --rm -v $PWD/app:/opt/app -it hello_world:1.0 axisecp/acap-sdk:3.2-armv7hf-ubuntu19.10
+     docker run --rm -v $PWD/app:/opt/app -it hello_world:1.0 axisecp/acap-sdk:3.2-armv7hf-ubuntu20.04
 
 Now inside the container to build the application run
 
