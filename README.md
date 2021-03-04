@@ -40,7 +40,7 @@ __Dockerfile__
     # Building the ACAP application
     COPY ./app /opt/app/
     WORKDIR /opt/app
-    RUN . /opt/axis/acapsdk/environment-setup* && create-package.sh
+    RUN create-package.sh
 
 __Makefile__ _(Note! make sure to preserve the tabs below, recipes in a makefile must be preceded by a single standard tab character)_
 
