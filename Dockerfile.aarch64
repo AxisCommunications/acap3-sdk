@@ -35,6 +35,7 @@ RUN apt-get install -y /opt/axis/tools/axis-acap-manifest-tools*.deb && \
 RUN sed -i 's:/opt/axis/sdk:/opt/axis/acapsdk:g' /opt/axis/acapsdk/environment-setup*
 
 # Copy the lib, include, .pc and Axis protobuf files from the API container
+ARG ARCH=aarch64
 COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/lib/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/lib/
 COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/include/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/include/
 COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/lib/pkgconfig/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/lib/pkgconfig/
