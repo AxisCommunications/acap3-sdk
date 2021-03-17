@@ -1,5 +1,5 @@
 # Quick reference
-[ACAP3 Manual](https://www.axis.com/products/online-manual/s00004)
+[ACAP Developer Guide – Version 3.1.0 – 3.2.0](https://www.axis.com/products/online-manual/s00004)
 
 - Supported architectures: amd64
 
@@ -17,7 +17,7 @@ See the license section at the bottom of this page for restrictions that relate 
 [AXIS Camera Application Platform (ACAP)](https://www.axis.com/sv-se/products/analytics/acap), is an open platform supported by most Axis cameras. The platform enables developers to develop applications that can be downloaded and installed on Axis network cameras and video encoders.
 
 
-# How to use the ACAP SDK Image
+# How to use the ACAP SDK image
 An example of how to use the ACAP SDK image to build a hello-world application
 
 
@@ -148,10 +148,10 @@ To install the application to a camera use command
 
       eap-install.sh --help
 
-For more information on building and installing an application, see [ACAP3 Manual](https://www.axis.com/products/online-manual/s00004#t10152940).
+For more information on building and installing an application, see [ACAP Developer Guide – Version 3.1.0 – 3.2.0](https://www.axis.com/products/online-manual/s00004#t10152940).
 
 
 # License
 
-By downloading AXIS Embedded Development SDK you automatically agree to the terms in the [license agreement](https://www.axis.com/techsup/developer_doc/EULA/LICENSE.pdf)
+By downloading ACAP SDK you automatically agree to the terms in the [license agreement](https://www.axis.com/techsup/developer_doc/EULA/LICENSE.pdf)
 
