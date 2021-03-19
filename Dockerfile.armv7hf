@@ -34,14 +34,12 @@ RUN apt-get install -y /opt/axis/tools/axis-acap-manifest-tools*.deb && \
 # Update paths in environment-setup script
 RUN sed -i 's:/opt/axis/sdk:/opt/axis/acapsdk:g' /opt/axis/acapsdk/environment-setup*
 
-# Hardcoded string for SDK architecture
-ARG PKG_ARCH=cortexa9hf-neon-poky-linux-gnueabi
-
 # Copy the lib, include, .pc and Axis protobuf files from the API container
-COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/lib/
-COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/include/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/include/
-COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/lib/pkgconfig/
-COPY --from=api /opt/axis/sdk/temp/sysroots/${PKG_ARCH}/usr/share/protobuf/ /opt/axis/acapsdk/sysroots/${PKG_ARCH}/usr/share/protobuf/
+ARG ARCH=armv7hf
+COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/lib/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/lib/
+COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/include/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/include/
+COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/lib/pkgconfig/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/lib/pkgconfig/
+COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/share/protobuf/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/share/protobuf/
 
 # Make the environment sourced for interactive Bash users
 RUN printf "\n# Source SDK for all users\n. /opt/axis/acapsdk/environment-*\n" >> /etc/bash.bashrc
