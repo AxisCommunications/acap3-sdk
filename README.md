@@ -1,5 +1,5 @@
 # Quick reference
-[ACAP Developer Guide – Version 3.1.0 – 3.2.0](https://www.axis.com/products/online-manual/s00004)
+[ACAP Developer Guide – Version 3](https://www.axis.com/products/online-manual/s00004)
 
 - Supported architectures: amd64
 
@@ -148,7 +148,7 @@ To install the application to a camera use command
 
       eap-install.sh --help
 
-For more information on building and installing an application, see [ACAP Developer Guide – Version 3.1.0 – 3.2.0](https://www.axis.com/products/online-manual/s00004#t10152940).
+For more information on building and installing an application, see [ACAP Developer Guide – Version 3](https://www.axis.com/products/online-manual/s00004#t10152940).
 
 
 # License
