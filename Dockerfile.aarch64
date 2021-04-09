@@ -9,10 +9,15 @@ FROM ${REPO}/acap-api:${VERSION}-${ARCH}-ubuntu${TOOLCHAINS_UBUNTU_VERSION} as a
 FROM ${REPO}/acap-toolchain:${VERSION}-${ARCH}-ubuntu${TOOLCHAINS_UBUNTU_VERSION} as toolchain
 FROM ubuntu:${UBUNTU_VERSION}
 
+# Install from 20.10(groovy) to make cross compiler use gcc-10
+RUN sed -i 's/focal/groovy/g' /etc/apt/sources.list && apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+	  crossbuild-essential-arm64 && \
+  sed -i 's/groovy/focal/g' /etc/apt/sources.list && apt-get update
+
 # Install packages needed for interactive users and some additional libraries
 # - curl, iputils-ping: required by eap-install.sh
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  crossbuild-essential-arm64 \
   make \
   pkg-config \
   python3-pip \
