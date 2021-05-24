@@ -20,36 +20,6 @@ See the license section at the bottom of this page for restrictions that relate 
 # How to use the ACAP SDK image
 An example of how to use the ACAP SDK image to build a [hello-world application](https://github.com/AxisCommunications/acap3-examples/tree/master/hello-world) is found on Github.
 
-
-## Build application inside container
-
-Standing in your working directory run the following command to bind mount the application directory in to the acap-sdk container:
-
-     docker run --rm -v $PWD/app:/opt/app -it hello_world:1.0 axisecp/acap-sdk:3.3-armv7hf-ubuntu20.04
-
-Now inside the container to build the application run
-
-     create-package.sh
-
-The app directory now contains the following files:
-
-    ├── Dockerfile
-    └── app
-        ├── LICENSE
-        ├── Makefile
-        ├── hello_world
-        ├── hello_world.c
-        ├── hello_world.o
-        ├── hello_world_1_0_0_LICENSE.txt
-        ├── hello_world_1_0_0_armv7hf.eap
-        ├── package.conf
-        ├── package.conf.orig
-        └── param.conf
-
-To install the application to a camera use command
-
-      eap-install.sh --help
-
 For more information on building and installing an application, see [ACAP Developer Guide – Version 3](https://www.axis.com/products/online-manual/s00004#t10152940).
 
 
