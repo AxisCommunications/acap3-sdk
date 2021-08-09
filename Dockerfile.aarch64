@@ -24,6 +24,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   less \
   vim
 
+# Add symlink for python
+RUN cd /usr/bin && ln -s python3 python
+
 # Copy and install the tools and scripts from toolchain container
 COPY --from=toolchain /opt/axis/sdk/temp /opt/axis/acapsdk
 COPY --from=toolchain /opt/axis/tools /opt/axis/tools
