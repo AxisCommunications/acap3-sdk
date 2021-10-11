@@ -1,5 +1,5 @@
 # Repository and tag variables
-ARG ARCH=aarch64
+ARG ARCH=armv7hf
 ARG VERSION=3.4
 ARG TOOLCHAINS_UBUNTU_VERSION=20.04
 ARG UBUNTU_VERSION=20.04
@@ -7,12 +7,20 @@ ARG REPO=axisecp
 
 FROM ${REPO}/acap-api:${VERSION}-${ARCH}-ubuntu${TOOLCHAINS_UBUNTU_VERSION} as api
 FROM ${REPO}/acap-toolchain:${VERSION}-${ARCH}-ubuntu${TOOLCHAINS_UBUNTU_VERSION} as toolchain
-FROM ubuntu:${UBUNTU_VERSION}
+
+FROM ubuntu:${UBUNTU_VERSION} AS armv7hf
+ENV CROSSBUILDARCH=armhf
+
+FROM ubuntu:${UBUNTU_VERSION} AS aarch64
+ENV CROSSBUILDARCH=arm64
+
+FROM ${ARCH}
+ARG ARCH
 
 # Install packages needed for interactive users and some additional libraries
 # - curl, iputils-ping: required by eap-install.sh
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  crossbuild-essential-arm64 \
+  crossbuild-essential-$CROSSBUILDARCH \
   make \
   pkg-config \
   python3-pip \
@@ -45,10 +53,13 @@ RUN sed -i 's:/opt/axis/sdk:/opt/axis/acapsdk:g' /opt/axis/acapsdk/environment-s
   sed -i '/\(CC\|CPP\|CXX\)=/s:"$: -L$SDKTARGETSYSROOT/usr/lib":g' /opt/axis/acapsdk/environment-setup*
 
 # Copy the lib, include, .pc and Axis protobuf files from the API container
-ARG ARCH=aarch64
 COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/lib/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/lib/
 COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/include/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/include/
 COPY --from=api /opt/axis/sdk/temp/sysroots/${ARCH}/usr/share/protobuf/ /opt/axis/acapsdk/sysroots/${ARCH}/usr/share/protobuf/
+
+# Add a missing file for OpenGL
+ARG KHR_DIR=/opt/axis/acapsdk/sysroots/${ARCH}/usr/include/KHR
+RUN curl --create-dirs -o ${KHR_DIR}/khrplatform.h https://raw.githubusercontent.com/KhronosGroup/EGL-Registry/master/api/KHR/khrplatform.h
 
 # Make the environment sourced for interactive Bash users
 RUN printf "\n# Source SDK for all users\n. /opt/axis/acapsdk/environment-*\n" >> /etc/bash.bashrc
