@@ -1,0 +1,19 @@
+name: Control Dockerfiles
+on:
+  push:
+    paths:
+      - 'Dockerfile*'
+      - '.github/workflows/build-dockerfile.yml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: ["armv7hf", "aarch64"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Control that Dockerfile builds
+        uses: docker/build-push-action@v2
+        with:
+          file: "Dockerfile.${{ matrix.arch }}"
+          push: false
