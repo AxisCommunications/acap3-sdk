@@ -1,0 +1,11 @@
+--- modelconverter.py	2022-08-04 09:31:04.936848223 +0000
++++ modelconverter.py	2022-08-04 09:31:25.421070108 +0000
+@@ -77,7 +77,7 @@
+             start_data(self.builder, len(file_data))
+             for b in reversed(file_data):
+                 self.builder.PrependByte(b)
+-        return self.builder.EndVector(len(file_data))
++        return self.builder.EndVector()
+ 
+     def build_model(self):
+         """ Wraps the inserted data into a complete model.

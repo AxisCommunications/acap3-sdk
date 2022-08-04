@@ -34,6 +34,11 @@ RUN apt-get install -y /opt/axis/tools/axis-acap-manifest-tools*.deb && \
   pip3 install /opt/axis/tools/Larodconverter*.whl && \
   rm -rf /opt/axis/tools
 
+# Patch to fix a bug in larodconverter Python package
+COPY ./modelconverter.py.patch ./
+RUN patch -ruN -d /usr/local/lib/python3.*/dist-packages/larodconverter < modelconverter.py.patch && \
+  rm -f modelconverter.py.patch
+
 # Add axis-acap-manifest-tools to PATH
 RUN sed -i 's#export PATH=#export PATH=/opt/axis/acapsdk/axis-acap-manifest-tools/manifest-generator:#g' /opt/axis/acapsdk/environment-setup*
 
