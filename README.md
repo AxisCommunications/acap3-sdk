@@ -18,7 +18,7 @@ See the license section at the bottom of this page for restrictions that relate 
 
 
 # How to use the ACAP SDK image
-An example of how to use the ACAP SDK image to build a [hello-world application](https://github.com/AxisCommunications/acap3-examples/tree/master/hello-world) is found on Github.
+An example of how to use the ACAP SDK image to build a [hello-world application](https://github.com/AxisCommunications/acap3-examples/tree/main/hello-world) is found on GitHub.
 
 For more information on building and installing an application, see [ACAP Developer Guide – Version 3](https://help.axis.com/acap-3-developer-guide#build-install-and-run-the-application).
 
